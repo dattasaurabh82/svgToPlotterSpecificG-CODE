@@ -36,7 +36,7 @@ help_msg(){
   echo "        [filename.svg].......Supplied SVG File"
   echo "        [x]..................Plotter's X width (in mm)"
   echo "        [y]..................Plotter's Y Height(in mm)"
-  echo "        [D]..................PenTipDiameter (in mm)"
+  echo "        [D]..................Pen tip diameter (in mm)"
   echo ""
   echo ""
   echo "${CYAN}        plotter_gcode -v .. for version"
