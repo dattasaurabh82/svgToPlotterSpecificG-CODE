@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# tool dia as argument
+
+
 x=0
 y=0
 
@@ -28,11 +31,12 @@ help_msg(){
   echo ""
   echo "${MAGENTA}        TO RUN:"
   echo ""
-  echo "        plotter_gcode [filename.svg] [x] [y]"
+  echo "        plotter_gcode [filename.svg] [x] [y] [D]"
   echo ""
   echo "        [filename.svg].......Supplied SVG File"
   echo "        [x]..................Plotter's X width (in mm)"
   echo "        [y]..................Plotter's Y Height(in mm)"
+  echo "        [D]..................PenTipDiameter (in mm)"
   echo ""
   echo ""
   echo "${CYAN}        plotter_gcode -v .. for version"
@@ -72,7 +76,7 @@ create_gcode(){
   # sleep 4
   echo " ${MAGENTA}:: Converting ${CYAN}$1 ${MAGENTA}to ${CYAN}$fbname.gcode"
   echo " ${MAGENTA}:: execute ${RED}'pkill node' ${MAGENTA}in a separate window after ${BLUE}5 sec"
-  svg2gcode -f 4000 -r 8 -D 3 $1 >> $fbname".gcode"
+  svg2gcode -f 4000 -r 8 -D $4 $1 >> $fbname".gcode"
   sleep 5
   # kill the svg2gcode node app as it doesn't exit
   # Since it's a node server. 
