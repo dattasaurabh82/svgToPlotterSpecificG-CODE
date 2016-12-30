@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-
-# tool dia as argument
-
+#!/bin/bash
 
 x=0
 y=0
@@ -36,7 +33,7 @@ help_msg(){
   echo "        [filename.svg].......Supplied SVG File"
   echo "        [x]..................Plotter's X width (in mm)"
   echo "        [y]..................Plotter's Y Height(in mm)"
-  echo "        [D]..................Pen tip diameter (in mm)"
+  echo "        [D]..................Plotter pen's tip dia(in mm)"
   echo ""
   echo ""
   echo "${CYAN}        plotter_gcode -v .. for version"
@@ -74,9 +71,9 @@ create_gcode(){
   # ----------> ::SAFETY:: remove the gcode file if it exists before
   # rm $fbname".gcode"
   # sleep 4
-  echo " ${MAGENTA}:: Converting ${CYAN}$1 ${MAGENTA}to ${CYAN}$fbname.gcode"
+  echo " ${MAGENTA}:: Converting ${CYAN}$1 ${MAGENTA}to ${CYAN}$fbname.gcode with tip dia: $2mm"
   echo " ${MAGENTA}:: execute ${RED}'pkill node' ${MAGENTA}in a separate window after ${BLUE}5 sec"
-  svg2gcode -f 4000 -r 8 -D $4 $1 >> $fbname".gcode"
+  svg2gcode -f 4000 -r 8 -D $2 $1 >> $fbname".gcode"
   sleep 5
   # kill the svg2gcode node app as it doesn't exit
   # Since it's a node server. 
@@ -274,11 +271,11 @@ elif [[ "$1" == "-v" || "$1" == "-V" ]];then
 elif [[ $# -eq 0 || -z "$1" ]];then
   echo "${RED}No arguments supplied"
   exit
-elif [[ $# < 3 || $# >3 ]];then
+elif [[ $# < 4 || $# > 4 ]];then
   echo "${RED}Some things wrong with argument numbers"
   exit
 else
-  create_gcode
+  create_gcode $1 $4
   while :
   do
     echo -n " ${RED}:: Do you want to change the origin? Yes/no:  "
@@ -321,5 +318,3 @@ else
     fi
   done
 fi
-
-
