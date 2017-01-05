@@ -108,7 +108,9 @@ add_initial_sequences(){
   # [3] do homing
   # [4] reset axes to zero after homing
   # [5] set units to mm and -ve axes and shit like that
-
+  
+  sed -i '' '1s/^/dummy\n/g' $fbname".gcode"
+  sleep 1
   echo " ${MAGENTA}:: [5] Setting units to 'mm'. Oh C'mon! not that imperial shit"
   sed -i '' '1s/^/G21 G90 G40\n/g' $fbname".gcode" # [5]
   sed -i '' '1s/^/(To mm)\n/g' $fbname".gcode"  
@@ -257,6 +259,10 @@ proceed_normal_way(){
   # removing tabs
   sed -i '' 's/   //g' $fbname".gcode"
   sleep 2
+  sed -i '' 's/G0 X- G0Y-/ /g' $fbname".gcode"
+  sleep 2
+  sed -i '' 's/dummy/G1 Z-300 F1000/g' $fbname".gcode"
+  sleep 1
   echo " ${RED}:: Done cleaning the last bits"
   echo ""
   sleep 2
