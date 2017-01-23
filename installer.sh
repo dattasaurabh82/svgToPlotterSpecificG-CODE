@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 cp plotter_gcode.sh plotter_gcode
 sleep 1
 cp plotter_gcode /usr/local/bin/

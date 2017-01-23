@@ -61,12 +61,12 @@ create_gcode(){
   echo ""
   #-----------> Creating gcode file from SVG
   # **NOTE**
-  # Do these installations first:    # ----------------------------- 
+  # Do these installations first:    # -----------------------------
   # > latest node and npm
-  # > svgTogcode (https://github.com/em/svg2gcode) [it's a terminal 
+  # > svgTogcode (https://github.com/em/svg2gcode) [it's a terminal
   #   utility and I love terminal ;)]
 
-  fbname=$(basename "$1" .svg) 
+  fbname=$(basename "$1" .svg)
   # echo $fbname".gcode"
   # ----------> ::SAFETY:: remove the gcode file if it exists before
   # rm $fbname".gcode"
@@ -76,9 +76,9 @@ create_gcode(){
   svg2gcode -f 4000 -r 8 -D $2 $1 >> $fbname".gcode"
   sleep 5
   # kill the svg2gcode node app as it doesn't exit
-  # Since it's a node server. 
+  # Since it's a node server.
   # NOTE: fallback is it's gonna kill all node processes
-  # pkill node 
+  # pkill node
   echo ""
   echo ""
   echo " ${BLUE}:: Dirty gcode created from svg2gcode node terminal utility"
@@ -90,7 +90,7 @@ create_gcode(){
   echo " ${RED}:: optimizing $fbname.gcode for the drawing machine"
   echo " ${RED}--------------------------------------------------------"
 
-  #-----------> Removing some g-code bits from begining 
+  #-----------> Removing some g-code bits from begining
   sleep 4
   sed -i '' 's/G90//g' $fbname".gcode"
   sleep 2
@@ -108,24 +108,24 @@ add_initial_sequences(){
   # [3] do homing
   # [4] reset axes to zero after homing
   # [5] set units to mm and -ve axes and shit like that
-  
+
   sed -i '' '1s/^/dummy\n/g' $fbname".gcode"
   sleep 1
   echo " ${MAGENTA}:: [5] Setting units to 'mm'. Oh C'mon! not that imperial shit"
   sed -i '' '1s/^/G21 G90 G40\n/g' $fbname".gcode" # [5]
-  sed -i '' '1s/^/(To mm)\n/g' $fbname".gcode"  
+  sed -i '' '1s/^/(To mm)\n/g' $fbname".gcode"
   sleep 4
   echo " ${BLUE}:: [4] Adding 'Resest to zero' commands at origin"
   sed -i '' '1s/^/G10 P0 L20 X0 Y0 Z0\n/g' $fbname".gcode" # [4]
   sed -i '' '1s/^/(Reset to zero at home)\n/g' $fbname".gcode"
   sleep 4
   echo " ${CYAN}:: [3] Adding homing command"
-  sed -i '' '1s/^/$H\n/g' $fbname".gcode" # [3] 
+  sed -i '' '1s/^/$H\n/g' $fbname".gcode" # [3]
   sed -i '' '1s/^/(Home)\n/g' $fbname".gcode"
   sleep 4
   echo " ${GREEN}:: [2] Adding pen lift up command specific to servo. remember"
   echo " ${GREEN}::     we are using grbl-servo where we are using servos for Z-Axis"
-  sed -i '' '1s/^/M03 S35\n/g' $fbname".gcode" # [2] -- S35 means 35 degrees
+  sed -i '' '1s/^/M03 S55\n/g' $fbname".gcode" # [2] -- S35 means 35 degrees
                                   # which I optimized for my machine
   sed -i '' '1s/^/(Lift)\n/g' $fbname".gcode"
   sleep 6
@@ -181,19 +181,19 @@ plotter_bed(){
 }
 
 go_to_origin(){
-  # reset to zero # 
+  # reset to zero #
   # G10 P0 L20 X0 Y0 Z0
   sed -i '' '1s/^/G10 P0 L20 X0 Y0 Z0\n/g' $fbname".gcode"
   # Add gcode for moving to new origin after homing if chaged
   # G0 X-$1 G0Y-$2
-  sed -i "" "1s/^/G0 X-$1 G0Y-$2\n/g" $fbname".gcode"
+  sed -i "" "1s/^/G0 X-$1 Y-$2\n/g" $fbname".gcode"
 }
 
 proceed_normal_way(){
   #-----------> Making the axes neagtive
-  # WHY? beacuse I like to follow traditions and for ideal conditions, a CNC is 
-  # always set to negative axes as it's a subractive manufacturing.. 
-  # So I've set up my GRBL for -ve axes but the gcode generated from svg2gcode 
+  # WHY? beacuse I like to follow traditions and for ideal conditions, a CNC is
+  # always set to negative axes as it's a subractive manufacturing..
+  # So I've set up my GRBL for -ve axes but the gcode generated from svg2gcode
   # for is set to +ve axes. So
   sleep 3
   sed -i '' 's/Z/Z-/g' $fbname".gcode"
@@ -217,7 +217,7 @@ proceed_normal_way(){
   echo " ${RED}:: manufacturing. So my plotter is also set in GRBL to -ve axes."
 
   #-----------> Replacing z axis commands with servo commands
-  # NOTE: I'm using a patched version of grbl modified for servo control 
+  # NOTE: I'm using a patched version of grbl modified for servo control
   # over z axis motor for z axis control.
   # ===========================
   # M05 = servo 0 degree
@@ -235,7 +235,7 @@ proceed_normal_way(){
   echo " ${GREEN}:: > M03 Sxxx = xxx degree"
   sleep 2
   echo " ${RED}:: Now setting those up"
-  sed -i '' 's/G0 Z-8 F32000/M03 S35/g' $fbname".gcode"
+  sed -i '' 's/G0 Z-8 F32000/M03 S55/g' $fbname".gcode"
   sleep 3
   sed -i '' 's/G0 Z-0 F32000/M05/g' $fbname".gcode"
   sleep 3
@@ -259,9 +259,9 @@ proceed_normal_way(){
   # removing tabs
   sed -i '' 's/   //g' $fbname".gcode"
   sleep 2
-  sed -i '' 's/G0 X- G0Y-/ /g' $fbname".gcode"
+  sed -i '' 's/G0 X- Y-/ /g' $fbname".gcode"
   sleep 2
-  sed -i '' 's/dummy/G1 Z-300 F1000/g' $fbname".gcode"
+  sed -i '' 's/dummy/G1 Z-200 F150/g' $fbname".gcode"
   sleep 1
   echo " ${RED}:: Done cleaning the last bits"
   echo ""
@@ -290,7 +290,8 @@ else
       sleep 1
       echo " ${CYAN}:: SET the new origin to multiples of 10 like 10, 20 etc."
       sleep 2
-      echo " ${CYAN}:: My suggestion; keep it between 50-250mm"
+      echo " ${CYAN}:: My suggestion; keep X between 10-60mm"
+      echo " ${CYAN}:: And keep Y between 20-100mm"
       sleep 2
       echo " :: And remember your plotter size is"
       sleep 2
@@ -307,7 +308,7 @@ else
       sleep 2
       go_to_origin $answerX $answerY
       add_initial_sequences
-      proceed_normal_way 
+      proceed_normal_way
       exit
       exit
     elif echo "$answer" | grep -iq  "^no"; then

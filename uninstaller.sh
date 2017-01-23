@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 rm plotter_gcode
 rm /usr/local/bin/plotter_gcode
